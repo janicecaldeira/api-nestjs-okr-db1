@@ -8,9 +8,7 @@ async function bootstrap() {
   const logger = WinstonModule.createLogger(winstonConfig);
   const app = await NestFactory.create(AppModule, {
     logger,
-    cors: {
-      origin: ['http://localhost:3001'],
-    },
+    cors: true,
   });
 
   const config = new DocumentBuilder()
