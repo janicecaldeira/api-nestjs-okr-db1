@@ -2,24 +2,24 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectiveRepository } from './objectives.repository';
-import { UserRole } from '../users/user-roles.enum';
-import { CreateObjectiveDto } from './dtos/create-objective.dto';
-import { Objective } from './objective.entity';
-import { UpdateObjectiveDto } from './dtos/update-objective.dto';
-import { KeyResult } from 'src/key-results/key-result.entity';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { ObjectiveRepository } from "./objectives.repository";
+import { UserRole } from "../users/user-roles.enum";
+import { CreateObjectiveDto } from "./dtos/create-objective.dto";
+import { Objective } from "./objective.entity";
+import { UpdateObjectiveDto } from "./dtos/update-objective.dto";
+import { KeyResult } from "src/key-results/key-result.entity";
 
 @Injectable()
 export class ObjectivesService {
   constructor(
     @InjectRepository(ObjectiveRepository)
-    private objectiveRepository: ObjectiveRepository,
+    private objectiveRepository: ObjectiveRepository
   ) {}
 
   async createObjective(
-    createObjectiveDto: CreateObjectiveDto,
+    createObjectiveDto: CreateObjectiveDto
   ): Promise<Objective> {
     return this.objectiveRepository.createObjective({
       createObjectiveDto,
@@ -30,33 +30,33 @@ export class ObjectivesService {
   async findAll(): Promise<Objective[]> {
     return Objective.find({
       order: {
-        createdAt: 'ASC',
+        createdAt: "ASC",
       },
-      relations: ['owner', 'team'],
+      relations: ["owner", "team", "year", "quarter"],
     });
   }
 
   async findKeyResult(objectiveId: string): Promise<KeyResult[]> {
     const keyResult = await this.objectiveRepository.findKeyResult(objectiveId);
 
-    if (!keyResult) throw new NotFoundException('Objetivo não encontrado');
+    if (!keyResult) throw new NotFoundException("Objetivo não encontrado");
 
     return keyResult;
   }
 
   async findOne(objectiveId: string): Promise<Objective> {
     const obj = await this.objectiveRepository.findOne(objectiveId, {
-      relations: ['owner', 'year', 'quarter', 'team'],
+      relations: ["owner", "year", "quarter", "team"],
     });
 
-    if (!obj) throw new NotFoundException('Objetivo não encontrado');
+    if (!obj) throw new NotFoundException("Objetivo não encontrado");
 
     return obj;
   }
 
   async updateObjective(
     updateObjectiveDto: UpdateObjectiveDto,
-    id: string,
+    id: string
   ): Promise<Objective> {
     const obj = await this.findOne(id);
     const {
@@ -85,7 +85,7 @@ export class ObjectivesService {
       return obj;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erro ao atualizar os dados no banco de dados',
+        "Erro ao atualizar os dados no banco de dados"
       );
     }
   }
@@ -94,7 +94,7 @@ export class ObjectivesService {
     const result = await this.objectiveRepository.delete({ id: objectiveId });
     if (result.affected === 0) {
       throw new NotFoundException(
-        'Não foi encontrado um objetivo com o ID informado',
+        "Não foi encontrado um objetivo com o ID informado"
       );
     }
   }

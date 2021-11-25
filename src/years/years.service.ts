@@ -2,19 +2,19 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { YearRepository } from './years.repository';
-import { UserRole } from '../users/user-roles.enum';
-import { CreateYearDto } from './dtos/create-year.dto';
-import { UpdateYearDto } from './dtos/update-year.dto';
-import { Year } from './year.entity';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { YearRepository } from "./years.repository";
+import { UserRole } from "../users/user-roles.enum";
+import { CreateYearDto } from "./dtos/create-year.dto";
+import { UpdateYearDto } from "./dtos/update-year.dto";
+import { Year } from "./year.entity";
 
 @Injectable()
 export class YearsService {
   constructor(
     @InjectRepository(YearRepository)
-    private yearRepository: YearRepository,
+    private yearRepository: YearRepository
   ) {}
 
   async createYear(createYearDto: CreateYearDto): Promise<Year> {
@@ -27,10 +27,10 @@ export class YearsService {
 
   async findOne(yearId: string): Promise<Year> {
     const year = await this.yearRepository.findOne(yearId, {
-      select: ['year', 'id'],
+      select: ["year", "id"],
     });
 
-    if (!year) throw new NotFoundException('Ano não encontrado');
+    if (!year) throw new NotFoundException("Ano não encontrado");
 
     return year;
   }
@@ -38,7 +38,7 @@ export class YearsService {
   async findObjectiveByYear(year: string): Promise<Year[]> {
     const years = await this.yearRepository.findObjectiveByYear(year);
 
-    if (!years) throw new NotFoundException('Ano não possui objetivos');
+    if (!years) throw new NotFoundException("Ano não possui objetivos");
 
     return years;
   }
@@ -47,7 +47,7 @@ export class YearsService {
     const years = await this.yearRepository.findObjectiveByYearByTeam(year, id);
 
     if (!years)
-      throw new NotFoundException('Time não possui objetivos com esse ano');
+      throw new NotFoundException("Time não possui objetivos com esse ano");
 
     return years;
   }
@@ -62,7 +62,7 @@ export class YearsService {
       return ano;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erro ao atualizar os dados no banco de dados',
+        "Erro ao atualizar os dados no banco de dados"
       );
     }
   }
@@ -71,7 +71,7 @@ export class YearsService {
     const result = await this.yearRepository.delete({ id: yearId });
     if (result.affected === 0) {
       throw new NotFoundException(
-        'Não foi encontrado um ano com o ID informado',
+        "Não foi encontrado um ano com o ID informado"
       );
     }
   }

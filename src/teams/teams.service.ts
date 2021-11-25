@@ -2,19 +2,19 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TeamRepository } from './teams.repository';
-import { UserRole } from '../users/user-roles.enum';
-import { CreateTeamDto } from './dtos/create-team.dto';
-import { UpdateTeamDto } from './dtos/update-team.dto';
-import { Team } from './team.entity';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { TeamRepository } from "./teams.repository";
+import { UserRole } from "../users/user-roles.enum";
+import { CreateTeamDto } from "./dtos/create-team.dto";
+import { UpdateTeamDto } from "./dtos/update-team.dto";
+import { Team } from "./team.entity";
 
 @Injectable()
 export class TeamsService {
   constructor(
     @InjectRepository(TeamRepository)
-    private teamRepository: TeamRepository,
+    private teamRepository: TeamRepository
   ) {}
 
   async createTeam(createTeamDto: CreateTeamDto): Promise<Team> {
@@ -23,16 +23,16 @@ export class TeamsService {
 
   async findAll() {
     return this.teamRepository.find({
-      relations: ['users'],
+      relations: ["users"],
     });
   }
 
   async findOne(teamId: string): Promise<Team> {
     const team = await this.teamRepository.findOne(teamId, {
-      select: ['team', 'id'],
+      select: ["team", "id"],
     });
 
-    if (!team) throw new NotFoundException('Time não encontrado');
+    if (!team) throw new NotFoundException("Time não encontrado");
 
     return team;
   }
@@ -40,7 +40,7 @@ export class TeamsService {
   async findObjectiveByTeam(teamId: string): Promise<Team[]> {
     const objectives = await this.teamRepository.findObjectiveByTeam(teamId);
 
-    if (!objectives) throw new NotFoundException('Time não possui objetivos');
+    if (!objectives) throw new NotFoundException("Time não possui objetivos");
 
     return objectives;
   }
@@ -48,7 +48,7 @@ export class TeamsService {
   async findUsersByTeam(teamId: string): Promise<Team[]> {
     const team = await this.teamRepository.findUsersByTeam(teamId);
 
-    if (!team) throw new NotFoundException('Time não possui usuários');
+    if (!team) throw new NotFoundException("Time não possui usuários");
 
     return team;
   }
@@ -63,7 +63,7 @@ export class TeamsService {
       return tm;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erro ao atualizar os dados no banco de dados',
+        "Erro ao atualizar os dados no banco de dados"
       );
     }
   }
@@ -72,7 +72,7 @@ export class TeamsService {
     const result = await this.teamRepository.delete({ id: teamId });
     if (result.affected === 0) {
       throw new NotFoundException(
-        'Não foi encontrado um time com o ID informado',
+        "Não foi encontrado um time com o ID informado"
       );
     }
   }

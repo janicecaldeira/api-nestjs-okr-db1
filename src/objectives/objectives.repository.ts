@@ -1,11 +1,11 @@
 import {
   ConflictException,
   InternalServerErrorException,
-} from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
-import { Objective } from './objective.entity';
-import { CreateObjectiveDto } from './dtos/create-objective.dto';
-import { UserRole } from '../users/user-roles.enum';
+} from "@nestjs/common";
+import { EntityRepository, Repository } from "typeorm";
+import { Objective } from "./objective.entity";
+import { CreateObjectiveDto } from "./dtos/create-objective.dto";
+import { UserRole } from "../users/user-roles.enum";
 
 @EntityRepository(Objective)
 export class ObjectiveRepository extends Repository<Objective> {
@@ -46,23 +46,23 @@ export class ObjectiveRepository extends Repository<Objective> {
       await obj.save();
       return obj;
     } catch (error) {
-      if (error.code.toString() === '23505') {
-        throw new ConflictException('Objetivo já cadastrado!');
+      if (error.code.toString() === "23505") {
+        throw new ConflictException("Objetivo já cadastrado!");
       } else {
         throw new InternalServerErrorException(
-          'Erro ao salvar o objetivo no banco de dados',
+          "Erro ao salvar o objetivo no banco de dados"
         );
       }
     }
   }
 
   async findKeyResult(id: string): Promise<any> {
-    const query = this.createQueryBuilder('objective');
-    query.where('objective.id = :id', { id });
-    query.innerJoinAndSelect('objective.key_results', 'key_results');
-    query.innerJoinAndSelect('key_results.owner', 'owner');
-    query.select(['objective.id', 'key_results', 'owner']);
-    query.orderBy('key_results.createdAt', 'ASC');
+    const query = this.createQueryBuilder("objective");
+    query.where("objective.id = :id", { id });
+    query.innerJoinAndSelect("objective.key_results", "key_results");
+    query.innerJoinAndSelect("key_results.owner", "owner");
+    query.select(["objective.id", "key_results", "owner"]);
+    query.orderBy("key_results.createdAt", "ASC");
     return await query.getOne();
   }
 }

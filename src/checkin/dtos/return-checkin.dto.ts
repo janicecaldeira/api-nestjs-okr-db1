@@ -1,4 +1,4 @@
-import { Checkin } from '../checkin.entity';
+import { Checkin } from "../checkin.entity";
 
 export class ReturnCheckinDto {
   checkin: Checkin;

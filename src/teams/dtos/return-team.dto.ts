@@ -1,4 +1,4 @@
-import { Team } from '../team.entity';
+import { Team } from "../team.entity";
 
 export class ReturnTeamDto {
   team: Team;

@@ -2,25 +2,25 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { QuarterRepository } from './quarters.repository';
-import { UserRole } from '../users/user-roles.enum';
-import { CreateQuarterDto } from './dtos/create-quarter.dto';
-import { UpdateQuarterDto } from './dtos/update-quarter.dto';
-import { Quarter } from './quarter.entity';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { QuarterRepository } from "./quarters.repository";
+import { UserRole } from "../users/user-roles.enum";
+import { CreateQuarterDto } from "./dtos/create-quarter.dto";
+import { UpdateQuarterDto } from "./dtos/update-quarter.dto";
+import { Quarter } from "./quarter.entity";
 
 @Injectable()
 export class QuartersService {
   constructor(
     @InjectRepository(QuarterRepository)
-    private quarterRepository: QuarterRepository,
+    private quarterRepository: QuarterRepository
   ) {}
 
   async createQuarter(createQuarterDto: CreateQuarterDto): Promise<Quarter> {
     return this.quarterRepository.createQuarter(
       createQuarterDto,
-      UserRole.MANAGER,
+      UserRole.MANAGER
     );
   }
 
@@ -30,42 +30,42 @@ export class QuartersService {
 
   async findOne(quarterId: string): Promise<Quarter> {
     const quarter = await this.quarterRepository.findOne(quarterId, {
-      select: ['quarter', 'id'],
+      select: ["quarter", "id"],
     });
 
-    if (!quarter) throw new NotFoundException('Quarter não encontrado');
+    if (!quarter) throw new NotFoundException("Quarter não encontrado");
 
     return quarter;
   }
 
   async findObjectiveByQuarter(quarter: string): Promise<Quarter[]> {
     const quarters = await this.quarterRepository.findObjectiveByQuarter(
-      quarter,
+      quarter
     );
 
-    if (!quarters) throw new NotFoundException('Quarter não possui objetivos');
+    if (!quarters) throw new NotFoundException("Quarter não possui objetivos");
 
     return quarters;
   }
 
   async findObjectiveByQuarterByTeam(
     quarter: string,
-    id: string,
+    id: string
   ): Promise<any> {
     const quarters = await this.quarterRepository.findObjectiveByQuarterByTeam(
       quarter,
-      id,
+      id
     );
 
     if (!quarters)
-      throw new NotFoundException('Time não possui objetivos com esse quarter');
+      throw new NotFoundException("Time não possui objetivos com esse quarter");
 
     return quarters;
   }
 
   async updateQuarter(
     updateQuarterDto: UpdateQuarterDto,
-    id: string,
+    id: string
   ): Promise<Quarter> {
     const quarters = await this.findOne(id);
     const { quarter } = updateQuarterDto;
@@ -76,7 +76,7 @@ export class QuartersService {
       return quarters;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erro ao atualizar os dados no banco de dados',
+        "Erro ao atualizar os dados no banco de dados"
       );
     }
   }
@@ -85,7 +85,7 @@ export class QuartersService {
     const result = await this.quarterRepository.delete({ id: quarterId });
     if (result.affected === 0) {
       throw new NotFoundException(
-        'Não foi encontrado um quarter com o ID informado',
+        "Não foi encontrado um quarter com o ID informado"
       );
     }
   }

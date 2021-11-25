@@ -10,17 +10,17 @@ import {
   Patch,
   ForbiddenException,
   HttpCode,
-} from '@nestjs/common';
-import { CreateObjectiveDto } from './dtos/create-objective.dto';
-import { ReturnObjectiveDto } from './dtos/return-objective.dto';
-import { UpdateObjectiveDto } from './dtos/update-objective.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Role } from '../auth/role.decorator';
-import { UserRole } from '../users/user-roles.enum';
-import { ObjectivesService } from './objectives.service';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { User } from 'src/users/user.entity';
+} from "@nestjs/common";
+import { CreateObjectiveDto } from "./dtos/create-objective.dto";
+import { ReturnObjectiveDto } from "./dtos/return-objective.dto";
+import { UpdateObjectiveDto } from "./dtos/update-objective.dto";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "src/auth/roles.guard";
+import { Role } from "../auth/role.decorator";
+import { UserRole } from "../users/user-roles.enum";
+import { ObjectivesService } from "./objectives.service";
+import { GetUser } from "src/auth/get-user.decorator";
+import { User } from "src/users/user.entity";
 import {
   ApiOkResponse,
   ApiTags,
@@ -29,95 +29,95 @@ import {
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiCreatedResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-@ApiTags('Objective')
-@Controller('objectives')
+@ApiTags("Objective")
+@Controller("objectives")
 @UseGuards(AuthGuard(), RolesGuard)
 export class ObjectivesController {
   constructor(private objectivesService: ObjectivesService) {}
 
   @Post()
   @Role(UserRole.MANAGER)
-  @ApiOperation({ summary: 'Cria objetivos' })
-  @ApiCreatedResponse({ description: 'Objetivo cadastrado com sucesso' })
+  @ApiOperation({ summary: "Cria objetivos" })
+  @ApiCreatedResponse({ description: "Objetivo cadastrado com sucesso" })
   @ApiInternalServerErrorResponse({
-    description: 'Erro ao salvar o objetivo no banco de dados',
+    description: "Erro ao salvar o objetivo no banco de dados",
   })
   async createObjective(
-    @Body(ValidationPipe) createObjectiveDto: CreateObjectiveDto,
+    @Body(ValidationPipe) createObjectiveDto: CreateObjectiveDto
   ): Promise<ReturnObjectiveDto> {
     const objective = await this.objectivesService.createObjective(
-      createObjectiveDto,
+      createObjectiveDto
     );
     return {
       objective,
-      message: 'Objetivo cadastrado com sucesso',
+      message: "Objetivo cadastrado com sucesso",
     };
   }
 
   @Get()
-  @ApiOperation({ summary: 'Busca todos os objetivos' })
-  @ApiOkResponse({ description: 'Sucesso' })
+  @ApiOperation({ summary: "Busca todos os objetivos" })
+  @ApiOkResponse({ description: "Sucesso" })
   async findAll() {
     return this.objectivesService.findAll();
   }
 
-  @Get('/:id/key_results')
+  @Get("/:id/key_results")
   @ApiOperation({
-    summary: 'Busca resultados-chaves de um objetivo especificado pelo id',
+    summary: "Busca resultados-chaves de um objetivo especificado pelo id",
   })
-  @ApiOkResponse({ description: 'Sucesso' })
-  @ApiNotFoundResponse({ description: 'Resultado-chave não encontrado' })
-  async findKeyResult(@Param('id') id: string) {
+  @ApiOkResponse({ description: "Sucesso" })
+  @ApiNotFoundResponse({ description: "Resultado-chave não encontrado" })
+  async findKeyResult(@Param("id") id: string) {
     return await this.objectivesService.findKeyResult(id);
   }
 
-  @Get('/:id')
-  @ApiOperation({ summary: 'Busca objetivo pelo id' })
-  @ApiOkResponse({ description: 'Objetivo encontrado' })
-  @ApiNotFoundResponse({ description: 'Objetivo não encontrado' })
-  async findOne(@Param('id') id: string): Promise<ReturnObjectiveDto> {
+  @Get("/:id")
+  @ApiOperation({ summary: "Busca objetivo pelo id" })
+  @ApiOkResponse({ description: "Objetivo encontrado" })
+  @ApiNotFoundResponse({ description: "Objetivo não encontrado" })
+  async findOne(@Param("id") id: string): Promise<ReturnObjectiveDto> {
     const objective = await this.objectivesService.findOne(id);
     return {
       objective,
-      message: 'Objetivo encontrado',
+      message: "Objetivo encontrado",
     };
   }
 
-  @Patch('/:id')
-  @ApiOperation({ summary: 'Aplica alterações parciais dos dados' })
-  @ApiOkResponse({ description: 'Objetivo atualizado com sucesso!' })
+  @Patch("/:id")
+  @ApiOperation({ summary: "Aplica alterações parciais dos dados" })
+  @ApiOkResponse({ description: "Objetivo atualizado com sucesso!" })
   @ApiForbiddenResponse({
-    description: 'Você não tem autorização para acessar esse recurso',
+    description: "Você não tem autorização para acessar esse recurso",
   })
   @ApiInternalServerErrorResponse({
-    description: 'Erro ao atualizar os dados no banco de dados',
+    description: "Erro ao atualizar os dados no banco de dados",
   })
   async updateObjective(
     @Body(ValidationPipe) updateObjectiveDto: UpdateObjectiveDto,
     @GetUser() user: User,
-    @Param('id') id: string,
+    @Param("id") id: string
   ) {
     if (user.role != UserRole.MANAGER)
       throw new ForbiddenException(
-        'Você não tem autorização para acessar esse recurso',
+        "Você não tem autorização para acessar esse recurso"
       );
     else {
       return this.objectivesService.updateObjective(updateObjectiveDto, id);
     }
   }
 
-  @Delete('/:id')
+  @Delete("/:id")
   @HttpCode(204)
   @Role(UserRole.MANAGER)
-  @ApiOperation({ summary: 'Deleta objetivo pelo id' })
-  @ApiOkResponse({ description: 'Objetivo excluído com sucesso' })
+  @ApiOperation({ summary: "Deleta objetivo pelo id" })
+  @ApiOkResponse({ description: "Objetivo excluído com sucesso" })
   @ApiNotFoundResponse({
-    description: 'Não foi encontrado um objetivo com o ID informado',
+    description: "Não foi encontrado um objetivo com o ID informado",
   })
-  async deleteObjective(@Param('id') id: string) {
+  async deleteObjective(@Param("id") id: string) {
     await this.objectivesService.deleteObjective(id);
-    return { message: 'Objetivo excluído com sucesso' };
+    return { message: "Objetivo excluído com sucesso" };
   }
 }

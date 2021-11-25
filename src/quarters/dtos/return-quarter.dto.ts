@@ -1,4 +1,4 @@
-import { Quarter } from '../quarter.entity';
+import { Quarter } from "../quarter.entity";
 
 export class ReturnQuarterDto {
   quarter: Quarter;

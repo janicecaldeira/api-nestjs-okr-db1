@@ -3,32 +3,32 @@ import {
   NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
-} from '@nestjs/common';
-import { UserRepository } from 'src/users/users.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
-import { CredentialsDto } from '../auth/dtos/credentials.dto';
-import { User } from '../users/user.entity';
-import { UserRole } from 'src/users/user-roles.enum';
-import { JwtService } from '@nestjs/jwt';
-import { randomBytes } from 'crypto';
-import { ChangePasswordDto } from '../auth/dtos/change-password.dto';
+} from "@nestjs/common";
+import { UserRepository } from "src/users/users.repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { CreateUserDto } from "src/users/dtos/create-user.dto";
+import { CredentialsDto } from "../auth/dtos/credentials.dto";
+import { User } from "../users/user.entity";
+import { UserRole } from "src/users/user-roles.enum";
+import { JwtService } from "@nestjs/jwt";
+import { randomBytes } from "crypto";
+import { ChangePasswordDto } from "../auth/dtos/change-password.dto";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async signup(createUserDto: CreateUserDto): Promise<User> {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
-      throw new UnprocessableEntityException('As senhas não conferem');
+      throw new UnprocessableEntityException("As senhas não conferem");
     } else {
       const user = await this.userRepository.createUser(
         createUserDto,
-        UserRole.USER,
+        UserRole.USER
       );
       return user;
     }
@@ -37,7 +37,7 @@ export class AuthService {
   async signin(credentialsDto: CredentialsDto) {
     const user = await this.userRepository.checkCredentials(credentialsDto);
     if (user === null) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException("Credenciais inválidas");
     }
 
     const userId = user.id;
@@ -51,27 +51,27 @@ export class AuthService {
 
   async recoverToken(id: string): Promise<any> {
     const user = await this.userRepository.findOne({ id });
-    if (!user) throw new NotFoundException('Usuário não encontrado');
-    user.recoverToken = randomBytes(32).toString('hex');
+    if (!user) throw new NotFoundException("Usuário não encontrado");
+    user.recoverToken = randomBytes(32).toString("hex");
     await user.save();
 
     const recover = await this.userRepository.findOne(
       { id },
-      { select: ['recoverToken'] },
+      { select: ["recoverToken"] }
     );
     return { recover };
   }
 
   async resetPassword(
     recoverToken: string,
-    changePasswordDto: ChangePasswordDto,
+    changePasswordDto: ChangePasswordDto
   ): Promise<void> {
     const user = await this.userRepository.findOne(
       { recoverToken },
-      { select: ['id'] },
+      { select: ["id"] }
     );
     if (!user) {
-      throw new NotFoundException('Token inválido');
+      throw new NotFoundException("Token inválido");
     }
 
     try {
@@ -83,12 +83,12 @@ export class AuthService {
 
   async changePassword(
     id: string,
-    changePassworDto: ChangePasswordDto,
+    changePassworDto: ChangePasswordDto
   ): Promise<void> {
     const { password, confirmationPassword } = changePassworDto;
 
     if (password != confirmationPassword) {
-      throw new UnprocessableEntityException('As senhas não conferem');
+      throw new UnprocessableEntityException("As senhas não conferem");
     }
 
     await this.userRepository.changePassword(id, password);

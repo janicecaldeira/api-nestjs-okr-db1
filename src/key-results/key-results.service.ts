@@ -2,50 +2,50 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { KeyResultRepository } from './key-result.repository';
-import { UserRole } from '../users/user-roles.enum';
-import { CreateKeyResultDto } from './dtos/create-key-result.dto';
-import { UpdateKeyResultDto } from './dtos/update-key-result.dto';
-import { KeyResult } from './key-result.entity';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { KeyResultRepository } from "./key-result.repository";
+import { UserRole } from "../users/user-roles.enum";
+import { CreateKeyResultDto } from "./dtos/create-key-result.dto";
+import { UpdateKeyResultDto } from "./dtos/update-key-result.dto";
+import { KeyResult } from "./key-result.entity";
 
 @Injectable()
 export class KeyResultsService {
   constructor(
     @InjectRepository(KeyResultRepository)
-    private keyResultRepository: KeyResultRepository,
+    private keyResultRepository: KeyResultRepository
   ) {}
 
   async createKeyResult(
-    createKeyResultDto: CreateKeyResultDto,
+    createKeyResultDto: CreateKeyResultDto
   ): Promise<KeyResult> {
     return this.keyResultRepository.createKeyResult(
       createKeyResultDto,
-      UserRole.USER,
+      UserRole.USER
     );
   }
 
   async findAll() {
     return await this.keyResultRepository.find({
       order: {
-        createdAt: 'ASC',
+        createdAt: "ASC",
       },
-      relations: ['objective', 'owner'],
+      relations: ["objective", "owner"],
     });
   }
 
   async findOne(keyResultId: string): Promise<KeyResult> {
     const kr = await this.keyResultRepository.findOne(keyResultId);
 
-    if (!kr) throw new NotFoundException('Resultado-chave não encontrado');
+    if (!kr) throw new NotFoundException("Resultado-chave não encontrado");
 
     return kr;
   }
 
   async updateKeyResult(
     updateKeyResultDto: UpdateKeyResultDto,
-    id: string,
+    id: string
   ): Promise<KeyResult> {
     const kr = await this.findOne(id);
     const {
@@ -82,7 +82,7 @@ export class KeyResultsService {
       return kr;
     } catch (error) {
       throw new InternalServerErrorException(
-        'Erro ao atualizar os dados no banco de dados',
+        "Erro ao atualizar os dados no banco de dados"
       );
     }
   }
@@ -91,7 +91,7 @@ export class KeyResultsService {
     const result = await this.keyResultRepository.delete({ id: keyResultId });
     if (result.affected === 0) {
       throw new NotFoundException(
-        'Não foi encontrado um resultado-chave com o ID informado',
+        "Não foi encontrado um resultado-chave com o ID informado"
       );
     }
   }

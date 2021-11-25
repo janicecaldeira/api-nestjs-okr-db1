@@ -4,13 +4,13 @@ import {
   NestInterceptor,
   CallHandler,
   ExecutionContext,
-} from '@nestjs/common';
-import { Logger } from 'winston';
-import { Observable } from 'rxjs';
+} from "@nestjs/common";
+import { Logger } from "winston";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  constructor(@Inject('winston') private logger: Logger) {}
+  constructor(@Inject("winston") private logger: Logger) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     this.log(context.switchToHttp().getRequest());
     return next.handle();
@@ -23,7 +23,7 @@ export class LoggerInterceptor implements NestInterceptor {
 
     const userEmail = (req as any).email;
 
-    this.logger.info('Log', {
+    this.logger.info("Log", {
       timestamp: new Date().toISOString(),
       method: req.method,
       route: req.route.path,
