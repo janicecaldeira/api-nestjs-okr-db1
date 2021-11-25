@@ -64,7 +64,6 @@ export class KeyResultsController {
   }
 
   @Get('/:id')
-  @Role(UserRole.USER)
   @ApiOperation({ summary: 'Busca key result pelo id' })
   @ApiOkResponse({ description: 'Resultado-chave encontrado' })
   @ApiNotFoundResponse({ description: 'Resultado-chave não encontrado' })
