@@ -35,7 +35,10 @@ export class TeamRepository extends Repository<Team> {
     const query = this.createQueryBuilder('team');
     query.where('team.id = :id', { id });
     query.innerJoinAndSelect('team.objectives', 'objectives');
-    query.select(['team.id', 'objectives']);
+    query.innerJoinAndSelect('objectives.owner', 'owner');
+    query.innerJoinAndSelect('objectives.year', 'year');
+    query.innerJoinAndSelect('objectives.quarter', 'quarter');
+    query.select(['team.id', 'objectives', 'owner', 'year', 'quarter']);
     return await query.getMany();
   }
 
